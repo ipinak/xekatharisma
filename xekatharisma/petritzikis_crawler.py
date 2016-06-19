@@ -3,21 +3,23 @@
 from parser_base import Parser
 
 
-class PetritzikisCrawler(Parser):
+class PetritzikisRecipeDiscoverer(Parser):
 
     BASE_URL = 'http://akispetretzikis.com'
 
     def __init__(self, lang=''):
         Parser.__init__(self)
-        self.url = "{0}/{1}".format(self.BASE_URL, lang)
 
-    def fetch_front_page(self):
-        self.read_page(self.url)
-        return self.browser.find_element_by_id('homepage')
+    def fetch_menu_links(self):
+        self.browser.get(self.BASE_URL)
+        menu = self.browser.find_element_by_id('menu')
+        sub_menu = menu.find_elements_by_class_name('sub')
+        all_links = [link.get_attribute('href')\
+                     for menu_item in sub_menu\
+                        for link in menu_item.find_elements_by_tag_name('a')\
+                            if 'javascript' not in link.get_attribute('href')
+                     ]
+        # remove duplicates
+        links_sets = set(all_links)
+        return links_sets
 
-    def fetch_latest_recipes(self):
-        self.read_page(self.url)
-        return self.browser.find_element_by_class_name('latest_recipes')
-
-    def read_page(self, url):
-        self.browser.get(url)
