@@ -25,7 +25,7 @@ class PetritzikisRecipeDiscoverer(Parser):
         links_sets = set(all_links)
         return links_sets
 
-    def fetch_links_in_page(self, url, page=0):
+    def fetch_links_in_page(self, url):
         """Return the links to recipes in paginated pages"""
 
         self.browser.get(url)
@@ -37,3 +37,46 @@ class PetritzikisRecipeDiscoverer(Parser):
                     ]
         aset = set(all_links)
         return aset
+
+    def fetch_pages_in_page(self, url):
+        """Returns the links that point to the pages
+        <nav class="pagination">
+            <span class="page">
+                <a rel="next" href="/en/tags/moschari?page=2">2</a>
+            </span>
+            <span class="page">
+                <a href="/en/tags/moschari?page=3">3</a>
+            </span>
+            <span class="page">
+            <a href="/en/tags/moschari?page=4">4</a>
+            </span>
+            <span class="page">
+                <a href="/en/tags/moschari?page=5">5</a>
+            </span>
+            <span class="next">
+                <a rel="next" href="/en/tags/moschari?page=2">&gt;</a>
+            </span>
+            <span class="last">
+                <a href="/en/tags/moschari?page=5">Last »</a>
+            </span>
+        </nav>
+        """
+
+        self.browser.get(url)
+        last_link = self.browser.find_element_by_id('tag')\
+            .find_element_by_tag_name('nav')\
+            .find_element_by_class_name('last')\
+            .find_element_by_tag_name('a')\
+            .get_attribute('href')
+        last_page = int(last_link[-1])
+
+        return self._generate_pages(last_link, last_page)
+
+
+    def _generate_pages(self, url, last_page):
+        """Generate the pages based on a schema:
+            http://domain.com/something?page={num}"""
+
+        url_without_num = url[:-1]
+        return ["{0}{1}".format(url_without_num, page)\
+                for page in xrange(2, last_page+1)]
