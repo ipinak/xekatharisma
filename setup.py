@@ -5,6 +5,7 @@ import re
 import ast
 from setuptools import setup
 
+
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
 
 with open('xekatharisma/__init__.py', 'rb') as f:
