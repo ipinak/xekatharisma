@@ -4,5 +4,5 @@ execnet==1.4.1
 py==1.10.0
 pytest==2.9.2
 pytest-xdist==1.14
-requests==2.20.0
+requests==2.31.0
 selenium==2.53.6
